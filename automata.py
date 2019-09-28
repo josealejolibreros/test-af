@@ -13,7 +13,7 @@ automata = [[None, 0, None, None],
 automata3 = [[None, 0],
              [0, None]]
 
-estados_aceptacion = [0]
+estados_aceptacion = [2,3]
 
 
 def recorrer(automata, estados_recorridos=None, estado_actual=0):
@@ -36,6 +36,10 @@ def recorrer(automata, estados_recorridos=None, estado_actual=0):
             estados_recorridos_iteracion.append(estado_siguiente)
             print(f"recorridos {estados_recorridos_iteracion}")
             recorrer(automata, estados_recorridos_iteracion, estado_siguiente)
+
+    if automata[estado_actual] == [None]*len(automata) and estado_actual not in estados_aceptacion:
+        raise  Exception("No alcanzo un estado de aceptacion")
+
     print(f"Finalizado recorrido desde {estado_actual}")
 
 
