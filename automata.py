@@ -1,47 +1,82 @@
 import time
 
-automata2 = [[1, 0, None, None],
-             [None, None, 0, 1],
-             [None, None, [0, 1], None],
-             [None, None, None, 0]]
 
-automata = [[None, 0, None, None],
-            [None, None, 0, 1],
-            [None, None, None, 1],
-            [None, None, None, None]]
+def recorrer(automata):
+    def buscar_ciclos(automata, estados_recorridos=None, estado_actual=0):
+        estados_recorridos_iteracion = (
+            estados_recorridos.copy() if estados_recorridos else []
+        )
+        for estado_siguiente in range(len(automata["matriz_transicion"])):
+            if automata["matriz_transicion"][estado_actual][estado_siguiente] != None:
+                if estado_siguiente in estados_recorridos_iteracion:
+                    return False
 
-automata3 = [[None, 0],
-             [0, None]]
+                estados_recorridos_iteracion.append(estado_siguiente)
+                if not buscar_ciclos(
+                    automata, estados_recorridos_iteracion, estado_siguiente
+                ):
+                    return False
 
-estados_aceptacion = [2,3]
+        if (
+            automata["matriz_transicion"][estado_actual]
+            == [None] * len(automata["matriz_transicion"])
+            and estado_actual not in automata["estados_aceptacion"]
+        ):
+            return False
 
+        return True
 
-def recorrer(automata, estados_recorridos=None, estado_actual=0):
-    estados_recorridos_iteracion = estados_recorridos.copy() if estados_recorridos else []
-    print(f"Recorriendo desde {estado_actual}: estados recorridos {estados_recorridos_iteracion}")
-    for estado_siguiente in range(len(automata)):
-        if automata[estado_actual][estado_siguiente] != None:
-            # Caso 1: q_i -> q_i
-            if estado_actual == estado_siguiente:
-                raise Exception("pailamifai")
-
-            # Caso 2: ya he estado en ese estado
-
-            print(f"estado en revision [origen {estado_actual}][destino {estado_siguiente}]")
-            # if estado_anterior+1 in estados_recorridos:
-            if estado_siguiente in estados_recorridos_iteracion:
-                raise Exception("pailamifai2")
-
-            print("agregando a recorridos ", estado_siguiente)
-            estados_recorridos_iteracion.append(estado_siguiente)
-            print(f"recorridos {estados_recorridos_iteracion}")
-            recorrer(automata, estados_recorridos_iteracion, estado_siguiente)
-
-    if automata[estado_actual] == [None]*len(automata) and estado_actual not in estados_aceptacion:
-        raise  Exception("No alcanzo un estado de aceptacion")
-
-    print(f"Finalizado recorrido desde {estado_actual}")
+    reconoce_lenguaje_finito = buscar_ciclos(automata)
+    if reconoce_lenguaje_finito:
+        print("El automata reconoce un lenguaje finito")
+    else:
+        print("El automata reconoce un lenguaje infinito")
 
 
-recorrer(automata)
-print("ta bien")
+automata_lenguaje_finito = {
+    "alfabeto": ["a", "b"],
+    "matriz_transicion": [
+        [None, "a", None],
+        [None, None, ["a", "b"]],
+        [None, None, None],
+    ],
+    "estados_aceptacion": [2],
+}
+
+
+automata_lenguaje_finito2 = {
+    "alfabeto": ["a", "b"],
+    "matriz_transicion": [
+        [None, "a", None],
+        [None, None, None],
+        [None, None, None],
+    ],
+    "estados_aceptacion": [1],
+}
+
+automata_lenguaje_infinito = {
+    "alfabeto": ["a", "b"],
+    "matriz_transicion": [
+        [None, "a", None, None],
+        [None, None, "a", "b"],
+        [None, None, None, "b"],
+        [None, None, None, "b"],
+    ],
+    "estados_aceptacion": [2, 3],
+}
+
+automata_lenguaje_infinito2 = {
+    "alfabeto": ["a", "b"],
+    "matriz_transicion": [
+        [None, "a", None, None],
+        [None, None, "a", "b"],
+        [None, None, None, ["a", "b"]],
+        [None, None, "a", None],
+    ],
+    "estados_aceptacion": [1, 2, 3],
+}
+
+recorrer(automata_lenguaje_finito)
+recorrer(automata_lenguaje_finito2)
+recorrer(automata_lenguaje_infinito)
+recorrer(automata_lenguaje_infinito2)
